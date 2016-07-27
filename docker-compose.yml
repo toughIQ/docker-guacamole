@@ -1,8 +1,24 @@
 # we still have to use compose v1 since the app requires LINKed environments
 
+# Create database and init
+mysql:
+    image: mysql:latest
+    volumes:
+        - ./mysql_data:/var/lib/mysql
+        - ./initdb.sql:/docker-entrypoint-initdb.d/initdb.sql:ro
+    environment:
+        - MYSQL_ROOT_PASSWORD=rootpass
+        - MYSQL_DATABASE=guacamole_db
+        - MYSQL_USER=guacamole_user
+        - MYSQL_PASSWORD=guacamole_pass
+
+# GUACD proxy
 guacd:
     image: glyptodon/guacd
 
+# GUACAMOLE webapp
+# Login at http://localhost:8080/guacamole
+# Default User: guacadmin / guacadmin
 guacamole:
     image: glyptodon/guacamole
     links:
@@ -14,14 +30,3 @@ guacamole:
         - MYSQL_PASSWORD=guacamole_pass
     ports:
         - 8080:8080
-
-mysql:
-    image: mysql:latest
-    volumes:
-        - ./mysql_data:/var/lib/mysql
-        - ./initdb.sql:/docker-entrypoint-initdb.d/initdb.sql:ro
-    environment:
-        - MYSQL_ROOT_PASSWORD=rootpass
-        - MYSQL_DATABASE=guacamole_db
-        - MYSQL_USER=guacamole_user
-        - MYSQL_PASSWORD=guacamole_pass
